@@ -7,7 +7,7 @@ import SearchBar from "../components/Searchbar";
 
 const Animes = () => {
   const [animeList, setAnimeList] = useState<AnimeType[]>([]);
-  const [filteredAnimes, setFilteredAnimes] = useState<AnimeType[]>(animeList);
+  const [filteredAnimes, setFilteredAnimes] = useState<AnimeType[]>([]);
   const navigate = useNavigate();
 
   function handleSearch(term: string) {
@@ -18,10 +18,15 @@ const Animes = () => {
   }
 
   useEffect(() => {
-    AnimeService.getAll().then((animes) => {
-      setAnimeList(animes);
-    });
-  }, [animeList]);
+    AnimeService.getAll()
+      .then((animes) => {
+        setAnimeList(animes);
+        setFilteredAnimes(animes);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []); 
 
   function handleOpen(id: number): void {
     navigate(`${id}`);
@@ -32,12 +37,12 @@ const Animes = () => {
       <SearchBar onSearch={handleSearch} />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full my-8">
         {filteredAnimes?.map((anime) => (
-              <AnimePreview
-                key={anime.id}
-                title={anime.name}
-                onClick={() => handleOpen(anime.id)}
-              />
-            ))}
+          <AnimePreview
+            key={anime.id}
+            title={anime.name}
+            onClick={() => handleOpen(anime.id)}
+          />
+        ))}
       </div>
     </>
   );
