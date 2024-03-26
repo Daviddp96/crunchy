@@ -1,13 +1,15 @@
+import { useAnimeContext } from "../context/AnimeContext";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "./Button";
 
 interface AnimeProps {
     name: string,
     likes: number,
-    description: string
+    description: string,
 }
 
 const Anime: React.FC<AnimeProps> = ({name, likes, description}) => {
+    const { deleteAnime } = useAnimeContext();
     const navigate = useNavigate();
     const params = useParams();
     const id = Number(params.id)
@@ -18,6 +20,11 @@ const Anime: React.FC<AnimeProps> = ({name, likes, description}) => {
 
     const handleEdit = () => {
         navigate(`/animes/${id}/edit`);
+    }
+
+    const handleDelete = () => {
+        deleteAnime(id);
+        navigate(`/animes`);
     }
 
     return (
@@ -34,8 +41,10 @@ const Anime: React.FC<AnimeProps> = ({name, likes, description}) => {
             <div>
                 <p className="my-4">{description}</p>
             </div>
-            
-            <Button onClick={handleEdit}>Edit</Button>
+            <div className="flex gap-8">
+                <Button onClick={handleEdit}>Edit</Button>
+                <Button onClick={handleDelete}>Delete</Button>
+            </div>
         </section>
     );
 }
