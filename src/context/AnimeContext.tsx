@@ -4,6 +4,8 @@ import AnimeService from "../services/AnimeService";
 
 interface AnimeContextType {
   animeList: AnimeType[];
+  likes: number;
+  incrementLikes: (id: number) => void;
   deleteAnime: (id: number) => Promise<void>;
 }
 
@@ -23,13 +25,23 @@ interface AnimeProviderProps {
 
 export const AnimeProvider: React.FC<AnimeProviderProps> = ({ children }) => {
   const [animeList, setAnimeList] = useState<AnimeType[]>([]);
+  const [likes, setLikes] = useState(0);
+
+  const incrementLikes = (id: number) => {
+    setLikes((prevLikes) => prevLikes + 1);
+    // Update the likes for the specific anime in the animeList
+    setAnimeList((prevList) =>
+      prevList.map((anime) =>
+        anime.id === id ? { ...anime, likes: anime.likes + 1 } : anime
+      )
+    );
+  };
 
   const deleteAnime = async (id: number): Promise<void> => {
     await AnimeService.deleteById(id);
     setAnimeList((prevList) => prevList.filter((anime) => anime.id !== id));
   };
 
-  // Fetch anime data from AnimeService and set initial animeList state
   useEffect(() => {
     const fetchData = async () => {
       const data = await AnimeService.getAll();
@@ -39,7 +51,7 @@ export const AnimeProvider: React.FC<AnimeProviderProps> = ({ children }) => {
   }, []);
 
   return (
-    <AnimeContext.Provider value={{ animeList, deleteAnime }}>
+    <AnimeContext.Provider value={{ animeList, likes, incrementLikes, deleteAnime }}>
       {children}
     </AnimeContext.Provider>
   );

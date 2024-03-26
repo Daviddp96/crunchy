@@ -45,7 +45,13 @@ const AnimeService = {
             const index = animes.indexOf(anime);
             animes.splice(index, 1);
         }
-    }
+    },
+    updateLikesById: async (id: number, likes: number): Promise<void> => {
+        const anime = animes.find((anime) => anime.id === id);
+        if (anime) {
+          anime.likes = likes;
+        }
+      },
 };
 
 export default AnimeService;
